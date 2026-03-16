@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentification Admin - Fleurs Boutique</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('videos/bc.jpg') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .auth-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 450px;
+      overflow: hidden;
+    }
+
+    .auth-header {
+      background: linear-gradient(135deg, #f3eeb2 0%, #fca4c8 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .auth-header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .auth-header p {
+      opacity: 0.9;
+    }
+
+    .auth-content {
+      padding: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #fa4a94;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #F8C8DC 0%, #fa4a94 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(250, 74, 148, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .alert.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert-error {
+      background: #fee;
+      color: #c33;
+      border: 1px solid #fcc;
+    }
+
+    .alert-success {
+      background: #efe;
+      color: #3c3;
+      border: 1px solid #cfc;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 10px;
+      color: #fa4a94;
+      font-weight: 600;
+    }
+
+    .info-box {
+      background: #fff9e6;
+      border: 2px solid #ffe066;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .info-box strong {
+      color: #fa4a94;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.1em;
+    }
+
+    .info-box p {
+      color: #666;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .back-link a {
+      color: #fa4a94;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .back-link a:hover {
+      color: #d63a7a;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-header">
+      <h1>🔐 Admin</h1>
+      <p>Panneau d'Administration - Fleurs Boutique</p>
+    </div>
+
+    <div class="auth-content">
+      <div id="alert" class="alert"></div>
+      
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="email">Email Administrateur</label>
+          <input type="email" id="email" required placeholder="admin@fleurs.com" autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input type="password" id="password" required placeholder="••••••••" autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn" id="login-btn">Se connecter</button>
+        <div class="loading" id="loading">Connexion en cours...</div>
+      </form>
+
+      <div class="info-box">
+        <strong>🔑 Compte Admin par défaut</strong>
+        <p>
+          Email: <strong>admin@fleurs.com</strong><br>
+          Mot de passe: <strong>admin123</strong>
+        </p>
+      </div>
+
+      <div class="back-link">
+        <a href="/auth.html">← Retour à l'espace client</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function handleLogin(event) {
+      event.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const btn = document.getElementById('login-btn');
+      const loading = document.getElementById('loading');
+
+      btn.disabled = true;
+      loading.style.display = 'block';
+      hideAlert();
+
+      try {
+        const response = await fetch('/api/auth/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Sauvegarder le token et les infos admin
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          
+          showAlert('Connexion réussie ! Redirection...', 'success');
+          
+          // Rediriger vers le dashboard admin
+          setTimeout(() => {
+            window.location.href = '/admin-dashboard.html';
+          }, 1000);
+        } else {
+          showAlert(data.error || 'Email ou mot de passe incorrect', 'error');
+        }
+      } catch (error) {
+        showAlert('Erreur de connexion au serveur', 'error');
+      } finally {
+        btn.disabled = false;
+        loading.style.display = 'none';
+      }
+    }
+
+    function showAlert(message, type) {
+      const alert = document.getElementById('alert');
+      alert.textContent = message;
+      alert.className = `alert alert-${type} show`;
+    }
+
+    function hideAlert() {
+      const alert = document.getElementById('alert');
+      alert.classList.remove('show');
+    }
+
+    // Rediriger si déjà connecté en tant qu'admin
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.role === 'admin') {
+      window.location.href = '/admin-dashboard.html';
+    }
+  </script>
+</body>
+</html>

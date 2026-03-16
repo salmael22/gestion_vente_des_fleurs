@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenue - Fleurs Boutique</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #000;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #background-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 2;
+    }
+
+    .content {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      text-align: center;
+      color: white;
+    }
+
+    .logo {
+      font-size: 4em;
+      margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .title {
+      font-size: 3em;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+      animation: fadeIn 1s ease-in;
+    }
+
+    .subtitle {
+      font-size: 1.5em;
+      margin-bottom: 40px;
+      opacity: 0.95;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+      animation: fadeIn 1.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn-start {
+      padding: 20px 50px;
+      font-size: 1.5em;
+      font-weight: bold;
+      background: linear-gradient(135deg, #bea0aa 0%, #b594b1 100%);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .btn-start:hover {
+      transform: scale(1.1) !important;
+      box-shadow: 0 15px 40px rgba(255, 107, 157, 0.6);
+    }
+
+    .btn-start:active {
+      transform: scale(1.05) !important;
+    }
+
+    .loading-text {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 1em;
+      z-index: 3;
+      opacity: 0.7;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      color: white;
+      text-decoration: none;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      z-index: 3;
+      transition: all 0.3s;
+      font-size: 0.9em;
+    }
+
+    .skip-link:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Animation d'entrée */
+    .fade-in {
+      animation: fadeInPage 0.5s ease-in;
+    }
+
+    @keyframes fadeInPage {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Pour mobile */
+    @media (max-width: 768px) {
+      .title { font-size: 2em; }
+      .subtitle { font-size: 1.2em; }
+      .btn-start { padding: 15px 35px; font-size: 1.2em; }
+      .logo { font-size: 3em; }
+    }
+  </style>
+</head>
+<body class="fade-in">
+  <!-- Lien pour passer -->
+  <a href="#" class="skip-link" onclick="goToDashboard()">Passer →</a>
+
+  <!-- Vidéo de fond -->
+  <div class="video-container">
+    <video id="background-video" autoplay muted playsinline>
+      <source src="/videos/VID.mp4" type="video/mp4">
+      <!-- Fallback si la vidéo ne charge pas -->
+      Votre navigateur ne supporte pas la vidéo.
+    </video>
+  </div>
+
+  <!-- Overlay sombre -->
+  <div class="overlay"></div>
+
+  <!-- Contenu principal -->
+  <div class="content">
+   
+    <h1 class="title">Fleuria Store</h1>
+    <p class="subtitle">Découvrez notre univers floral</p>
+    <button class="btn-start" onclick="goToDashboard()">
+      ✨ Commencer l'Aventure ✨
+    </button>
+  </div>
+
+  
+  <script>
+    const video = document.getElementById('background-video');
+    let hasClickedButton = false;
+
+    // Vérifier si l'utilisateur a déjà vu la vidéo dans cette session
+    const hasSeenIntro = sessionStorage.getItem('hasSeenIntro');
+    
+    if (hasSeenIntro === 'true') {
+      // Si déjà vu, rediriger directement
+      window.location.href = '/dashboard.html';
+    }
+
+   function goToDashboard() {
+  hasClickedButton = true;
+  sessionStorage.setItem('hasSeenIntro', 'true');
+  
+  // Animation de sortie
+  document.body.style.animation = 'fadeOut 0.5s ease-out';
+  
+  setTimeout(() => {
+    window.location.href = '/dashboard.html'; // ✅ Vers dashboard, pas bouquet.html
+  }, 500);
+}
+
+    // Animation de sortie
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Quand la vidéo se termine
+    video.addEventListener('ended', function() {
+      if (!hasClickedButton) {
+        // Relancer la vidéo automatiquement
+        video.currentTime = 0;
+        video.play();
+      }
+    });
+
+    // Gestion des erreurs de chargement de vidéo
+    video.addEventListener('error', function() {
+      console.log('Erreur de chargement de la vidéo');
+      document.getElementById('loading-text').textContent = 
+        'Vidéo non disponible - Cliquez pour continuer';
+      
+      // Afficher un fond de secours
+      document.querySelector('.video-container').style.background = 
+        'linear-gradient(135deg, #ff6b9d 0%, #c239b3 100%)';
+    });
+
+    // Assurer que la vidéo joue (certains navigateurs bloquent autoplay)
+    video.play().catch(function(error) {
+      console.log('Autoplay bloqué:', error);
+      // Si autoplay est bloqué, on peut proposer de cliquer pour jouer
+      document.getElementById('loading-text').textContent = 
+        'Cliquez n\'importe où pour démarrer';
+      
+      document.body.addEventListener('click', function() {
+        video.play();
+      }, { once: true });
+    });
+
+    // Raccourci clavier : Entrée pour commencer
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        goToDashboard();
+      }
+    });
+
+    // Support du geste swipe sur mobile
+    let touchStartY = 0;
+    document.addEventListener('touchstart', function(e) {
+      touchStartY = e.touches[0].clientY;
+    });
+
+    document.addEventListener('touchend', function(e) {
+      const touchEndY = e.changedTouches[0].clientY;
+      const swipeDistance = touchStartY - touchEndY;
+      
+      // Si swipe vers le haut de plus de 50px
+      if (swipeDistance > 50) {
+        goToDashboard();
+      }
+    });
+  </script>
+</body>
+</html>

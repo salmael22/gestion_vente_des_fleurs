@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fleuria Store</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ff6b9d 0%, #c98ca4 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading-container {
+      text-align: center;
+      color: white;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    h1 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    p {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <h1>Bienvenue chez Fleuria Store 🌸</h1>
+    <p>Chargement en cours...</p>
+  </div>
+
+  <script>
+    // Vérifier si l'utilisateur a déjà vu la vidéo d'intro
+    const hasSeenIntro = sessionStorage.getItem('hasSeenIntro');
+    
+    if (hasSeenIntro === 'true') {
+      // Si déjà vu, rediriger directement vers dashboard
+      window.location.href = '/dashboard.html';
+    } else {
+      // Sinon, afficher la vidéo d'intro
+      window.location.href = '/landing.html';
+    }
+  </script>
+</body>
+</html>

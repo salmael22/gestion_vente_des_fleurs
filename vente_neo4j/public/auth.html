@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentification - Système de Vente</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+
+      background: url('videos/bc.jpg') no-repeat center center; 
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: transparent;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .auth-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 450px;
+      overflow: hidden;
+    }
+
+    .auth-header {
+      background: linear-gradient(135deg, #f3eeb2 0%, #fca4c8 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .auth-header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .auth-header p {
+      opacity: 0.9;
+    }
+
+    .auth-tabs {
+      display: flex;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 20px;
+      text-align: center;
+      background: white;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.3s ease;
+    }
+
+    .tab.active {
+      color: #fa4a94;
+      border-bottom: 3px solid #fa4a94 ;
+    }
+
+    .tab:hover {
+      background: #f9f9f9;
+    }
+
+    .auth-content {
+      padding: 30px;
+    }
+
+    .form-container {
+      display: none;
+    }
+
+    .form-container.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #fa4a94;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #F8C8DC 0%, #fa4a94 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .alert.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert-error {
+      background: #fee;
+      color: #c33;
+      border: 1px solid #fcc;
+    }
+
+    .alert-success {
+      background: #efe;
+      color: #3c3;
+      border: 1px solid #cfc;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 10px;
+      color: #667eea;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-header">
+      <h1>🌸 Fleurs Boutique</h1>
+      <p>Espace Client - Gérez vos achats de fleurs</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="tab active" onclick="switchTab('login')">Connexion</button>
+      <button class="tab" onclick="switchTab('register')">Inscription</button>
+    </div>
+
+    <div class="auth-content">
+      <!-- Formulaire de connexion -->
+      <div id="login-form" class="form-container active">
+        <div id="login-alert" class="alert"></div>
+        
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" required placeholder="votre@email.com">
+          </div>
+
+          <div class="form-group">
+            <label for="login-password">Mot de passe</label>
+            <input type="password" id="login-password" required placeholder="••••••••">
+          </div>
+
+          <button type="submit" class="btn" id="login-btn">Se connecter</button>
+          <div class="loading" id="login-loading">Connexion en cours...</div>
+        </form>
+      </div>
+
+      <!-- Formulaire d'inscription -->
+      <div id="register-form" class="form-container">
+        <div id="register-alert" class="alert"></div>
+        
+        <form onsubmit="handleRegister(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="register-nom">Nom *</label>
+              <input type="text" id="register-nom" required placeholder="Dupont">
+            </div>
+
+            <div class="form-group">
+              <label for="register-prenom">Prénom *</label>
+              <input type="text" id="register-prenom" required placeholder="Jean">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="register-email">Email *</label>
+            <input type="email" id="register-email" required placeholder="votre@email.com">
+          </div>
+
+          <div class="form-group">
+            <label for="register-telephone">Téléphone</label>
+            <input type="tel" id="register-telephone" placeholder="+212 6 12 34 56 78">
+          </div>
+
+          <div class="form-group">
+            <label for="register-password">Mot de passe *</label>
+            <input type="password" id="register-password" required placeholder="••••••••" minlength="6">
+          </div>
+
+          <div class="form-group">
+            <label for="register-confirm">Confirmer le mot de passe *</label>
+            <input type="password" id="register-confirm" required placeholder="••••••••" minlength="6">
+          </div>
+
+          <button type="submit" class="btn" id="register-btn">Créer mon compte</button>
+          <div class="loading" id="register-loading">Création du compte...</div>
+        </form>
+      </div>
+    </div>
+
+   
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      // Mettre à jour les onglets
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Afficher le formulaire correspondant
+      document.querySelectorAll('.form-container').forEach(f => f.classList.remove('active'));
+      document.getElementById(tab + '-form').classList.add('active');
+
+      // Masquer les alertes
+      hideAlert('login-alert');
+      hideAlert('register-alert');
+    }
+
+    function showAlert(id, message, type) {
+      const alert = document.getElementById(id);
+      alert.textContent = message;
+      alert.className = `alert alert-${type} show`;
+    }
+
+    function hideAlert(id) {
+      const alert = document.getElementById(id);
+      alert.classList.remove('show');
+    }
+
+    async function handleLogin(event) {
+      event.preventDefault();
+      
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('login-btn');
+      const loading = document.getElementById('login-loading');
+
+      btn.disabled = true;
+      loading.style.display = 'block';
+      hideAlert('login-alert');
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Sauvegarder le token
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('client', JSON.stringify(data.user));
+          
+         
+          
+          // Vérifier s'il y a une page de redirection
+          const redirectUrl = localStorage.getItem('redirectAfterLogin') || '/dashboard.html';
+          localStorage.removeItem('redirectAfterLogin');
+          
+          // Rediriger
+          setTimeout(() => {
+            window.location.href = redirectUrl;
+          }, 50);
+        } else {
+          showAlert('login-alert', data.error || 'Erreur de connexion', 'error');
+        }
+      } catch (error) {
+        showAlert('login-alert', 'Erreur de connexion au serveur', 'error');
+      } finally {
+        btn.disabled = false;
+        loading.style.display = 'none';
+      }
+    }
+
+    async function handleRegister(event) {
+      event.preventDefault();
+      
+      const nom = document.getElementById('register-nom').value;
+      const prenom = document.getElementById('register-prenom').value;
+      const email = document.getElementById('register-email').value;
+      const telephone = document.getElementById('register-telephone').value;
+      const password = document.getElementById('register-password').value;
+      const confirm = document.getElementById('register-confirm').value;
+      const btn = document.getElementById('register-btn');
+      const loading = document.getElementById('register-loading');
+
+      // Vérifier que les mots de passe correspondent
+      if (password !== confirm) {
+        showAlert('register-alert', 'Les mots de passe ne correspondent pas', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      loading.style.display = 'block';
+      hideAlert('register-alert');
+
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nom, prenom, email, telephone, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Sauvegarder le token
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.setItem('client', JSON.stringify(data.user));
+          
+          showAlert('register-alert', 'Compte créé avec succès ! Redirection...', 'success');
+          
+          // Vérifier s'il y a une page de redirection
+          const redirectUrl = localStorage.getItem('redirectAfterLogin') || '/dashboard.html';
+          localStorage.removeItem('redirectAfterLogin');
+          
+          // Rediriger
+          setTimeout(() => {
+            window.location.href = redirectUrl;
+          }, 1000);
+        } else {
+          showAlert('register-alert', data.error || 'Erreur lors de la création du compte', 'error');
+        }
+      } catch (error) {
+        showAlert('register-alert', 'Erreur de connexion au serveur', 'error');
+      } finally {
+        btn.disabled = false;
+        loading.style.display = 'none';
+      }
+    }
+
+    // Rediriger si déjà connecté
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (localStorage.getItem('token')) {
+      if (user.role === 'admin') {
+        window.location.href = '/admin-dashboard.html';
+      } else {
+        window.location.href = '/dashboard.html';
+      }
+    }
+  </script>
+</body>
+</html>

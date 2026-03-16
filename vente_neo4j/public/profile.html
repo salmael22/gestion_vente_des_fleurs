@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon Profil</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fce9f4; min-height: 100vh; }
+    
+    .navbar {
+      background: rgba(0,0,0,0.2);
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 20px 30px;
+    }
+    .nav-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .nav-brand { font-size: 1.5em; font-weight: bold; color: white; }
+    .btn-back { padding: 8px 20px; background: rgba(255, 255, 255, 0.2); border: 2px solid white; color: white; border-radius: 8px; text-decoration: none; transition: all 0.3s; }
+    .btn-back:hover { background: white; color: #ff6b9d; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 100px 20px 40px; }
+
+    .profile-header { background: white; border-radius: 20px; padding: 40px; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); text-align: center; }
+    .profile-avatar { width: 120px; height: 120px; background: linear-gradient(135deg, #ff6b9d 0%, #c239b3 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3em; font-weight: bold; margin: 0 auto 20px; }
+    .profile-name { font-size: 2em; color: #333; margin-bottom: 5px; }
+    .profile-email { color: #999; font-size: 1.1em; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); text-align: center; }
+    .stat-icon { font-size: 2.5em; margin-bottom: 10px; }
+    .stat-value { font-size: 2em; font-weight: bold; color: #ff6b9d; margin-bottom: 5px; }
+    .stat-label { color: #666; font-size: 0.9em; }
+
+    .section { background: white; border-radius: 15px; padding: 30px; margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); }
+    .section-title { font-size: 1.5em; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; }
+
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; margin-bottom: 8px; color: #666; font-weight: 600; font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1em; transition: border-color 0.3s; }
+    .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #ff6b9d; }
+    .form-group textarea { resize: vertical; min-height: 80px; font-family: inherit; }
+
+    .btn { padding: 15px 30px; border: none; border-radius: 10px; font-size: 1em; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
+    .btn:hover { transform: scale(1.02); }
+    .btn-primary { background: linear-gradient(135deg, #ff6b9d 0%, #c239b3 100%); color: white; }
+    .btn-secondary { background: #f0f0f0; color: #666; }
+    
+    .btn-group { display: flex; gap: 15px; margin-top: 20px; }
+
+    .alert { padding: 15px; border-radius: 10px; margin-bottom: 20px; display: none; }
+    .alert.show { display: block; animation: slideDown 0.3s; }
+    .alert-success { background: #d4edda; color: #155724; }
+    .alert-error { background: #f8d7da; color: #721c24; }
+
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .read-only { background: #f9f9f9; cursor: not-allowed; }
+    .edit-mode .read-only { background: white; cursor: text; }
+
+    .loading { text-align: center; padding: 40px; color: #666; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-content">
+      <div class="nav-brand">👤 Mon Profil</div>
+      <a href="/dashboard.html" class="btn-back">← Retour</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <div class="section">
+      <h2 class="section-title">📋 Informations Personnelles</h2>
+      <form id="profile-form" onsubmit="saveProfile(event)">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Prénom *</label>
+            <input type="text" id="prenom" required readonly class="read-only">
+          </div>
+          <div class="form-group">
+            <label>Nom *</label>
+            <input type="text" id="nom" required readonly class="read-only">
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="email" required readonly class="read-only">
+          </div>
+          <div class="form-group">
+            <label>Téléphone</label>
+            <input type="tel" id="telephone" placeholder="+212 6XX XX XX XX" readonly class="read-only">
+          </div>
+        </div>
+
+        <h3 style="margin: 30px 0 20px; color: #666; font-size: 1.2em;">📍 Adresse de Livraison</h3>
+        <div class="form-group">
+          <label>Adresse Complète</label>
+          <textarea id="adresse" placeholder="Numéro, rue, ville, code postal..." readonly class="read-only"></textarea>
+        </div>
+
+        <div class="btn-group">
+          <button type="button" class="btn btn-secondary" onclick="toggleEdit()" id="btn-edit">✏️ Modifier</button>
+          <button type="submit" class="btn btn-primary" style="display: none;" id="btn-save">💾 Enregistrer</button>
+          <button type="button" class="btn btn-secondary" style="display: none;" onclick="cancelEdit()" id="btn-cancel">✕ Annuler</button>
+        </div>
+      </form>
+    </div>
+     <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-value" id="stat-commandes">0</div>
+        <div class="stat-label">Commandes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-value" id="stat-total">0 DH</div>
+        <div class="stat-label">Total dépensé</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🌸</div>
+        <div class="stat-value" id="stat-produits">0</div>
+        <div class="stat-label">Produits achetés</div>
+      </div>
+     
+    </div>
+
+
+
+  <script>
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    let originalData = {};
+
+    if (!token || user.role !== 'client') {
+      localStorage.setItem('redirectAfterLogin', '/profile.html');
+      window.location.href = '/auth.html';
+    }
+
+    async function loadProfile() {
+      try {
+        // Charger les infos du profil
+        const response = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) throw new Error('Erreur chargement profil');
+
+        const data = await response.json();
+        
+        // Sauvegarder les données originales
+        originalData = {...data};
+
+        // Afficher les données
+        const initials = `${data.prenom?.[0] || ''}${data.nom?.[0] || ''}`.toUpperCase();
+      
+
+        document.getElementById('prenom').value = data.prenom || '';
+        document.getElementById('nom').value = data.nom || '';
+        document.getElementById('email').value = data.email || '';
+        document.getElementById('telephone').value = data.telephone || '';
+        document.getElementById('adresse').value = data.adresse || '';
+
+        // Charger les statistiques
+        await loadStats();
+
+      } catch (error) {
+        console.error('Erreur:', error);
+        showAlert('Erreur lors du chargement du profil', 'error');
+      }
+    }
+
+    async function loadStats() {
+      try {
+        const response = await fetch('/api/ventes/client', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const ventes = await response.json();
+          
+          const totalCommandes = ventes.length;
+          const totalDepense = ventes.reduce((sum, v) => sum + (v.montant || 0), 0);
+          const totalProduits = ventes.reduce((sum, v) => sum + (v.quantite || 0), 0);
+
+          document.getElementById('stat-commandes').textContent = totalCommandes;
+          document.getElementById('stat-total').textContent = totalDepense.toFixed(2) + ' DH';
+          document.getElementById('stat-produits').textContent = totalProduits;
+        }
+
+        // Date d'inscription
+        if (originalData.dateInscription) {
+          const date = new Date(originalData.dateInscription);
+          const mois = date.toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
+          document.getElementById('stat-date').textContent = mois;
+        }
+
+      } catch (error) {
+        console.error('Erreur stats:', error);
+      }
+    }
+
+    function toggleEdit() {
+      const form = document.getElementById('profile-form');
+      form.classList.add('edit-mode');
+      
+      // Activer les champs (sauf email)
+      document.querySelectorAll('.read-only').forEach(input => {
+        if (input.id !== 'email') {
+          input.readOnly = false;
+          input.classList.remove('read-only');
+        }
+      });
+
+      // Changer les boutons
+      document.getElementById('btn-edit').style.display = 'none';
+      document.getElementById('btn-save').style.display = 'inline-block';
+      document.getElementById('btn-cancel').style.display = 'inline-block';
+    }
+
+    function cancelEdit() {
+      const form = document.getElementById('profile-form');
+      form.classList.remove('edit-mode');
+      
+      // Restaurer les valeurs originales
+      document.getElementById('prenom').value = originalData.prenom || '';
+      document.getElementById('nom').value = originalData.nom || '';
+      document.getElementById('telephone').value = originalData.telephone || '';
+      document.getElementById('adresse').value = originalData.adresse || '';
+
+      // Désactiver les champs
+      document.querySelectorAll('#profile-form input, #profile-form textarea').forEach(input => {
+        input.readOnly = true;
+        input.classList.add('read-only');
+      });
+
+      // Changer les boutons
+      document.getElementById('btn-edit').style.display = 'inline-block';
+      document.getElementById('btn-save').style.display = 'none';
+      document.getElementById('btn-cancel').style.display = 'none';
+    }
+
+    async function saveProfile(event) {
+      event.preventDefault();
+
+      const data = {
+        nom: document.getElementById('nom').value.trim(),
+        prenom: document.getElementById('prenom').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        telephone: document.getElementById('telephone').value.trim(),
+        adresse: document.getElementById('adresse').value.trim()
+      };
+
+      if (!data.nom || !data.prenom || !data.email) {
+        showAlert('Veuillez remplir tous les champs obligatoires', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/clients/${user.id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          showAlert('✓ Profil mis à jour avec succès !', 'success');
+          
+          // Mettre à jour localStorage
+          user.nom = data.nom;
+          user.prenom = data.prenom;
+          localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('client', JSON.stringify(user));
+          
+          // Recharger le profil
+          await loadProfile();
+          cancelEdit();
+        } else {
+          const error = await response.json();
+          showAlert(error.error || 'Erreur lors de la sauvegarde', 'error');
+        }
+      } catch (error) {
+        showAlert('Erreur de connexion', 'error');
+      }
+    }
+
+    function showAlert(message, type) {
+      const alert = document.getElementById('alert');
+      alert.textContent = message;
+      alert.className = `alert alert-${type} show`;
+      setTimeout(() => alert.classList.remove('show'), 5000);
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>

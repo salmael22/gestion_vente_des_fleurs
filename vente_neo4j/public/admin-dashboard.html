@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin - Fleurs Boutique</title>
+  <style>
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      background: linear-gradient(135deg, #fff5f7 0%, #ffe0e9 100%);
+      min-height: 100vh; 
+    }
+
+    /* Navbar moderne */
+    .navbar {
+      background: linear-gradient(135deg, #ff6b9d 0%, #c98ca4 100%);
+      color: white;
+      padding: 0 30px;
+      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .nav-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 75px;
+    }
+
+    .nav-brand {
+      font-size: 1.6em;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-badge {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      padding: 5px 14px;
+      border-radius: 25px;
+      font-size: 0.55em;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .nav-links { 
+      display: flex; 
+      gap: 8px; 
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      position: relative;
+    }
+
+    .nav-links a:hover { 
+      background: rgba(255, 255, 255, 0.2); 
+      transform: translateY(-2px);
+    }
+
+    .nav-links a.active { 
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-user span {
+      font-weight: 600;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 25px;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-logout {
+      padding: 10px 24px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-logout:hover { 
+      background: white; 
+      color: #c98ca4; 
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 107, 157, 0.3);
+    }
+
+    .container { 
+      max-width: 1400px; 
+      margin: 0 auto; 
+      padding: 40px 20px; 
+    }
+
+    /* Hero section moderne */
+    .hero {
+      background: linear-gradient(135deg, #ff6b9d 0%, #c98ca4 100%);
+      border-radius: 25px;
+      padding: 60px 50px;
+      margin-bottom: 40px;
+      box-shadow: 0 10px 40px rgba(255, 107, 157, 0.3);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .hero h1 {
+      font-size: 2.8em;
+      color: white;
+      margin-bottom: 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero p { 
+      font-size: 1.3em; 
+      color: rgba(255, 255, 255, 0.95);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Cartes de statistiques modernes */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(255, 107, 157, 0.15);
+      text-align: center;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #ff6b9d 0%, #c98ca4 100%);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 45px rgba(255, 107, 157, 0.25);
+    }
+
+    .stat-value {
+      font-size: 2.8em;
+      font-weight: bold;
+      background: linear-gradient(135deg, #ff6b9d 0%, #c98ca4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .stat-label { 
+      color: #666; 
+      font-size: 1.1em;
+      font-weight: 500;
+    }
+
+    /* Actions rapides modernes */
+    .section-title {
+      font-size: 2em;
+      color: #333;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+
+    .action-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px 30px;
+      box-shadow: 0 8px 30px rgba(255, 107, 157, 0.15);
+      cursor: pointer;
+      transition: all 0.4s ease;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid transparent;
+    }
+
+    .action-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 107, 157, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .action-card:hover::before {
+      left: 100%;
+    }
+
+    .action-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 15px 45px rgba(255, 107, 157, 0.25);
+      border-color: #ffb3d1;
+    }
+
+    .action-icon {
+      font-size: 3.5em;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 4px 8px rgba(255, 107, 157, 0.2));
+    }
+
+    .action-card h3 {
+      font-size: 1.4em;
+      color: #333;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .action-card p { 
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* Ajout d'un effet de pulsation subtile */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .stat-card:hover .stat-value {
+      animation: pulse 1s ease-in-out;
+    }
+
+    /* Décorations florales */
+    .hero::after {
+      content: '🌸';
+      position: absolute;
+      font-size: 8em;
+      opacity: 0.1;
+      top: 20px;
+      right: 50px;
+      z-index: 0;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(10deg); }
+    }
+
+    .loading { 
+      text-align: center; 
+      padding: 60px; 
+      color: #c98ca4;
+      font-size: 1.2em;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-content {
+        flex-direction: column;
+        height: auto;
+        padding: 20px 0;
+      }
+
+      .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .hero {
+        padding: 40px 30px;
+      }
+
+      .hero h1 {
+        font-size: 2em;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-content">
+      <div class="nav-brand">
+        🌸 Fleurs Admin
+        <span class="admin-badge">ADMINISTRATEUR</span>
+      </div>
+      <div class="nav-links">
+        <a href="/admin-dashboard.html" class="active">Accueil</a>
+        <a href="/bouquets.html">Bouquets</a>
+        <a href="/fleurs.html">Fleurs</a>
+        <a href="/ventes.html">Ventes</a>
+        <a href="/clients.html">Clients</a>
+        <a href="/graph.html">Graphique</a>
+      </div>
+      <div class="nav-user">
+        <span id="admin-name">Admin</span>
+        <button class="btn-logout" onclick="logout()">Déconnexion</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="hero">
+      <h1>🌺 Tableau de bord Administrateur</h1>
+      <p>Gérez votre boutique de fleurs avec élégance et passion</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="total-products">0</div>
+        <div class="stat-label">🌹 Produits</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="total-clients">0</div>
+        <div class="stat-label">👥 Clients</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="total-ventes">0</div>
+        <div class="stat-label">💐 Ventes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="total-revenue">0 DH</div>
+        <div class="stat-label">💰 Chiffre d'affaires</div>
+      </div>
+    </div>
+
+    <h2 class="section-title">⚡ Actions Rapides</h2>
+
+    <div class="quick-actions">
+      <div class="action-card" onclick="location.href='/bouquets.html'">
+        <div class="action-icon">💐</div>
+        <h3>Gérer les Bouquets</h3>
+        <p>Ajouter, modifier ou supprimer des bouquets de votre catalogue</p>
+      </div>
+
+      <div class="action-card" onclick="location.href='/fleurs.html'">
+        <div class="action-icon">🌸</div>
+        <h3>Gérer les Fleurs</h3>
+        <p>Ajouter, modifier ou supprimer des fleurs individuelles</p>
+      </div>
+
+      <div class="action-card" onclick="location.href='/clients.html'">
+        <div class="action-icon">👥</div>
+        <h3>Gérer les Clients</h3>
+        <p>Consulter la liste des clients et leurs informations</p>
+      </div>
+
+      <div class="action-card" onclick="location.href='/ventes.html'">
+        <div class="action-icon">💰</div>
+        <h3>Gérer les Ventes</h3>
+        <p>Créer de nouvelles ventes et suivre l'historique des transactions</p>
+      </div>
+
+      <div class="action-card" onclick="location.href='/graph.html'">
+        <div class="action-icon">📊</div>
+        <h3>Visualisation</h3>
+        <p>Analyser les relations et les statistiques avec des graphiques</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    // Vérifier si c'est bien un admin
+    if (!token || user.role !== 'admin') {
+      localStorage.clear();
+      window.location.href = '/admin-auth.html';
+    }
+
+    // Afficher le nom de l'admin
+    document.getElementById('admin-name').textContent = user.prenom || 'Admin';
+
+    // Charger les statistiques
+    async function loadStats() {
+      try {
+        const [products, clients, ventes] = await Promise.all([
+          fetch('/api/products', { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json()),
+          fetch('/api/clients', { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json()),
+          fetch('/api/ventes', { headers: { 'Authorization': `Bearer ${token}` } }).then(r => r.json())
+        ]);
+
+        document.getElementById('total-products').textContent = products.length;
+        document.getElementById('total-clients').textContent = clients.length;
+        document.getElementById('total-ventes').textContent = ventes.length;
+
+        const totalRevenue = ventes.reduce((sum, v) => sum + v.montant, 0);
+        document.getElementById('total-revenue').textContent = totalRevenue.toFixed(2) + ' DH';
+      } catch (error) {
+        console.error('Erreur lors du chargement des stats:', error);
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = '/admin-auth.html';
+    }
+
+    loadStats();
+  </script>
+</body>
+</html>

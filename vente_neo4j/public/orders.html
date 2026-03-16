@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes Commandes</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fce9f4; min-height: 100vh; }
+    
+    .navbar {
+      background: rgba(0,0,0,0.2);
+      box-shadow: none;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 20px 30px;
+    }
+
+    .nav-content {
+      max-width: 1400px; 
+      margin: 0 auto; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+
+    .nav-brand { font-size: 1.5em; font-weight: bold; display: flex; align-items: center; gap: 10px; color:white; }
+    .nav-user { display: flex; align-items: center; gap: 20px; }
+    .btn-back { padding: 8px 20px; background: rgba(255, 255, 255, 0.2); border: 2px solid white; color: white; border-radius: 8px; cursor: pointer; font-weight: 600; text-decoration: none; transition: all 0.3s; }
+    .btn-back:hover { background: white; color: #ff6b9d; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; padding-top: 100px; }
+
+    .page-header {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    .page-title {
+      font-size: 2.5em;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .page-subtitle {
+      color: #999;
+      font-size: 1.1em;
+    }
+
+    .orders-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .order-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s;
+    }
+
+    .order-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .order-id {
+      font-weight: bold;
+      color: #333;
+      font-size: 1.1em;
+    }
+
+    .order-date {
+      color: #999;
+      font-size: 0.9em;
+    }
+
+    .order-status {
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9em;
+    }
+
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-confirmed {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .status-delivered {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-cancelled {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .order-body {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .order-details {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .order-type {
+      display: inline-block;
+      padding: 5px 15px;
+      background: linear-gradient(135deg, #ff6b9d 0%, #c239b3 100%);
+      color: white;
+      border-radius: 15px;
+      font-size: 0.85em;
+      font-weight: 600;
+      margin-bottom: 10px;
+      width: fit-content;
+    }
+
+    .order-info-item {
+      display: flex;
+      gap: 10px;
+      color: #666;
+      font-size: 0.95em;
+    }
+
+    .order-info-label {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .order-items {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+    }
+
+    .order-items-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .order-item {
+      padding: 8px 0;
+      color: #666;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .order-item:last-child {
+      border-bottom: none;
+    }
+
+    .order-total {
+      text-align: right;
+    }
+
+    .order-amount {
+      font-size: 2em;
+      font-weight: bold;
+      color: #ff6b9d;
+      margin-bottom: 5px;
+    }
+
+    .order-amount-label {
+      color: #999;
+      font-size: 0.9em;
+    }
+
+    .order-actions {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 2px solid #f0f0f0;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn-cancel {
+      padding: 10px 20px;
+      background: #ff6b9d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-cancel:hover {
+      background: #e55989;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+    }
+
+    .btn-cancel:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .empty-state {
+      background: white;
+      border-radius: 15px;
+      padding: 60px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .empty-icon {
+      font-size: 5em;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .empty-title {
+      font-size: 1.5em;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .empty-text {
+      color: #999;
+      margin-bottom: 30px;
+    }
+
+    .btn-shop {
+      padding: 15px 40px;
+      background: linear-gradient(135deg, #ff6b9d 0%, #c239b3 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .btn-shop:hover {
+      transform: scale(1.05);
+    }
+
+    .alert {
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: none;
+      font-weight: 500;
+      animation: slideDown 0.3s;
+    }
+    
+    .alert.show { display: block; }
+    .alert-success { background: linear-gradient(135deg, #d4f8e8 0%, #c8f5dd 100%); color: #155724; border-left: 4px solid #28a745; }
+    .alert-error { background: linear-gradient(135deg, #ffe0e4 0%, #ffd0d7 100%); color: #721c24; border-left: 4px solid #dc3545; }
+    .alert-info { background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%); color: #0c5460; border-left: 4px solid #17a2b8; }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px;
+      color: #666;
+      font-size: 1.2em;
+    }
+
+    /* Modal de confirmation */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .modal-header h3 {
+      color: #333;
+      font-size: 1.3em;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .modal-body {
+      margin-bottom: 20px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn-modal {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-modal-cancel {
+      background: #e0e0e0;
+      color: #666;
+    }
+
+    .btn-modal-cancel:hover {
+      background: #d0d0d0;
+    }
+
+    .btn-modal-confirm {
+      background: #ff6b9d;
+      color: white;
+    }
+
+    .btn-modal-confirm:hover {
+      background: #e55989;
+    }
+
+    @media (max-width: 768px) {
+      .order-body {
+        grid-template-columns: 1fr;
+      }
+
+      .order-total {
+        text-align: left;
+        padding-top: 20px;
+        border-top: 2px solid #f0f0f0;
+      }
+
+      .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .order-actions {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-content">
+      <div class="nav-brand">📦 Mes Commandes</div>
+      <a href="/dashboard.html" class="btn-back">← Retour</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div id="alert" class="alert"></div>
+    <div id="orders-container" class="loading">Chargement de vos commandes...</div>
+  </div>
+
+  <!-- Modal de confirmation -->
+  <div id="cancelModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>⚠️ Annuler la commande</h3>
+        <button class="modal-close" onclick="closeCancelModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Êtes-vous sûr de vouloir annuler cette commande ?</p>
+        <p style="margin-top: 10px; color: #ff6b9d; font-weight: 600;">Cette action est irréversible.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-modal btn-modal-cancel" onclick="closeCancelModal()">Non, garder</button>
+        <button class="btn-modal btn-modal-confirm" onclick="confirmCancel()">Oui, annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const client = JSON.parse(localStorage.getItem('client') || '{}');
+
+    console.log('Orders - Token:', token ? 'présent' : 'absent');
+    console.log('Orders - User:', user);
+
+    if (!token || user.role !== 'client') {
+      localStorage.setItem('redirectAfterLogin', '/mes-commandes.html');
+      alert('Veuillez vous connecter pour voir vos commandes');
+      window.location.href = '/auth.html';
+    }
+
+    let orders = [];
+    let orderToCancel = null;
+
+    async function loadOrders() {
+      try {
+        const response = await fetch('/api/ventes/client', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Erreur chargement commandes');
+        }
+
+        orders = await response.json();
+        console.log('Commandes chargées:', orders);
+        
+        displayOrders();
+      } catch (error) {
+        console.error('Erreur loadOrders:', error);
+        document.getElementById('orders-container').innerHTML = `
+          <div class="alert alert-error show">
+            Erreur lors du chargement des commandes. Veuillez réessayer.
+          </div>
+        `;
+      }
+    }
+
+    function displayOrders() {
+      const container = document.getElementById('orders-container');
+
+      if (orders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📦</div>
+            <h2 class="empty-title">Aucune commande pour le moment</h2>
+            <p class="empty-text">Vous n'avez pas encore passé de commande. Découvrez notre collection !</p>
+            <button class="btn-shop" onclick="goToShop()">🛍️ Découvrir nos fleurs</button>
+          </div>
+        `;
+        return;
+      }
+
+      // Trier par date (plus récent en premier)
+      orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      container.innerHTML = `
+        <div class="orders-container">
+          ${orders.map(order => createOrderCard(order)).join('')}
+        </div>
+      `;
+    }
+
+    function createOrderCard(order) {
+      const date = new Date(order.date);
+      const formattedDate = date.toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const statusClass = getStatusClass(order.statut);
+      const statusText = getStatusText(order.statut);
+
+      let orderContent = '';
+      
+      // Si c'est un bouquet personnalisé
+      if (order.type === 'bouquet_personnalise' && order.composition) {
+        try {
+          const composition = JSON.parse(order.composition);
+          orderContent = `
+            <div class="order-type">💐 Bouquet Personnalisé</div>
+            <div class="order-items">
+              <div class="order-items-title">${order.nomBouquet || 'Bouquet Personnalisé'}</div>
+              ${composition.map(fleur => `
+                <div class="order-item">
+                  🌸 ${fleur.name} - Quantité: ${fleur.quantite} (${(fleur.prix * fleur.quantite).toFixed(2)} DH)
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } catch (e) {
+          console.error('Erreur parsing composition:', e);
+        }
+      } else {
+        // Commande normale
+        orderContent = `
+          <div class="order-type">🌺 Bouquet Standard</div>
+          <div class="order-items">
+            <div class="order-item">
+              Quantité: ${order.quantite}
+            </div>
+          </div>
+        `;
+      }
+
+      // Bouton d'annulation uniquement si statut = "En attente"
+      const cancelButton = order.statut === 'En attente' 
+        ? `<button class="btn-cancel" onclick="openCancelModal('${order.id}')">❌ Annuler la commande</button>`
+        : '';
+
+      return `
+        <div class="order-card" id="order-${order.id}">
+          <div class="order-header">
+            <div>
+              <div class="order-id">Commande #${order.id.substring(0, 8)}</div>
+              <div class="order-date">${formattedDate}</div>
+            </div>
+            <div class="order-status ${statusClass}">${statusText}</div>
+          </div>
+          
+          <div class="order-body">
+            <div class="order-details">
+              ${orderContent}
+              
+              <div class="order-info-item">
+                <span class="order-info-label">📍 Adresse:</span>
+                <span>${order.adresseLivraison || 'Non spécifiée'}</span>
+              </div>
+              
+              <div class="order-info-item">
+                <span class="order-info-label">📞 Téléphone:</span>
+                <span>${order.telephone || 'Non spécifié'}</span>
+              </div>
+            </div>
+            
+            <div class="order-total">
+              <div class="order-amount">${order.montant.toFixed(2)} DH</div>
+              <div class="order-amount-label">Montant total</div>
+            </div>
+          </div>
+
+          ${cancelButton ? `<div class="order-actions">${cancelButton}</div>` : ''}
+        </div>
+      `;
+    }
+
+    function getStatusClass(statut) {
+      const statusMap = {
+        'En attente': 'status-pending',
+        'Confirmée': 'status-confirmed',
+        'Livrée': 'status-delivered',
+        'Annulée': 'status-cancelled'
+      };
+      return statusMap[statut] || 'status-pending';
+    }
+
+    function getStatusText(statut) {
+      const statusMap = {
+        'En attente': '⏳ En attente',
+        'Confirmée': '✓ Confirmée',
+        'Livrée': '✅ Livrée',
+        'Annulée': '❌ Annulée'
+      };
+      return statusMap[statut] || statut;
+    }
+
+    function openCancelModal(orderId) {
+      orderToCancel = orderId;
+      document.getElementById('cancelModal').classList.add('show');
+    }
+
+    function closeCancelModal() {
+      orderToCancel = null;
+      document.getElementById('cancelModal').classList.remove('show');
+    }
+
+    async function confirmCancel() {
+  if (!orderToCancel) return;
+
+  try {
+    const response = await fetch(`/api/ventes/${orderToCancel}/cancel`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    // Vérifier si la réponse est JSON avant de parser
+    const contentType = response.headers.get('content-type');
+    let data = {};
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      console.error('Réponse non JSON:', text);
+      throw new Error('Erreur serveur');
+    }
+
+    if (response.ok) {
+      showAlert('✓ Commande annulée avec succès', 'success');
+      closeCancelModal();
+
+      // Retirer la commande annulée du DOM avec animation
+      const orderCard = document.getElementById(`order-${orderToCancel}`);
+      if (orderCard) {
+        orderCard.style.transition = 'opacity 0.3s, transform 0.3s';
+        orderCard.style.opacity = '0';
+        orderCard.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          orderCard.remove(); // supprime définitivement du DOM
+        }, 300);
+      }
+
+    } else {
+      showAlert(data.error || 'Erreur lors de l\'annulation', 'error');
+    }
+  } catch (error) {
+    console.error('Erreur annulation:', error);
+    showAlert('Erreur de connexion au serveur', 'error');
+  }
+}
+
+// Fonction pour rediriger vers la boutique
+function goToShop() {
+  window.location.href = '/bouquet.html';
+}
+
+// Fonction pour afficher une alerte
+function showAlert(message, type) {
+  const alert = document.getElementById('alert');
+  alert.textContent = message;
+  alert.className = `alert alert-${type} show`;
+  setTimeout(() => alert.classList.remove('show'), 5000);
+}
+
+// Fonction pour fermer le modal d'annulation
+function closeCancelModal() {
+  const modal = document.getElementById('cancelModal');
+  if (modal) modal.classList.remove('show');
+}
+
+// Charger les commandes au démarrage
+document.addEventListener('DOMContentLoaded', () => {
+  loadOrders();
+});
+  </script>
+</body>
+</html>

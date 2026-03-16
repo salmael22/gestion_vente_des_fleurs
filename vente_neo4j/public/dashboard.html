@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boutique de Fleurs</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      min-height: 80vh; 
+      background: url('videos/b.jpg') no-repeat center center; 
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    /* overlay pour lisibilité */
+    body::before {
+      content: "";
+      position: fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background-color: rgba(0,0,0,0.3);
+      z-index: -1;
+    }
+
+    /* Navbar transparent */
+    .navbar {
+      background: rgba(0,0,0,0.2);
+      box-shadow: none;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 20px 30px;
+    }
+
+    .nav-content {
+      max-width: 1400px; 
+      margin: 0 auto; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+
+    .nav-brand { font-size: 1.5em; font-weight: bold; display: flex; align-items: center; gap: 10px; color:white; }
+    .nav-user { display: flex; align-items: center; gap: 20px; }
+
+   
+    .user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; transition: opacity 0.3s; }
+.user-info:hover { opacity: 0.8; }
+    .user-avatar { width: 40px; height: 40px; background: white; color: #ff6b9d; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2em; }
+    .cart-btn, .btn-logout { padding: 8px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: 2px solid white; background: rgba(255,255,255,0.2); color: white; transition: all 0.3s ease; }
+    .cart-btn:hover { background: white; color: #ff6b9d; }
+    .btn-logout:hover { background: white; color: #ed83a6; }
+    .cart-badge { position: absolute; top: -8px; right: -8px; background: #ff4757; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; font-weight: bold; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      z-index: 1;
+    }
+
+    .hero h1 { font-size: 3em; margin-bottom: 15px; }
+    .hero p { font-size: 1.3em; margin-bottom: 30px; }
+
+    .btn-custom-bouquet { 
+      margin: 10px;
+      padding: 15px 40px; 
+      background: transparent; 
+      color: #ffffff; 
+      border: 3px solid #ffffff; 
+      border-radius: 10px; 
+      font-size: 1.1em; 
+      font-weight: bold; 
+      cursor: pointer; 
+      transition: all 0.3s;
+    }
+
+    .btn-custom-bouquet:hover {
+      background: #ff6b9d;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    /* Alert */
+    .alert { position: fixed; top: 90px; left:50%; transform: translateX(-50%); padding: 15px; border-radius: 8px; display:none; z-index:200; }
+    .alert.show { display:block; }
+    .alert-success { background: #4caf50; color: white; }
+    .alert-error { background: #f44336; color: white; }
+
+  </style>
+</head>
+<body>
+
+  <!-- Navbar transparent -->
+  <nav class="navbar">
+    <div class="nav-content">
+      <div class="nav-brand">🌸 Fleurs Boutique</div>
+      <div class="nav-user" id="nav-user"></div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <br><br><br>
+    <br><br><br>
+    <br><br><br>
+    <h1> Bienvenue dans notre Boutique</h1>
+    <p>Découvrez notre collection de fleurs fraîches</p>
+    <button onclick="location.href='/custom-bouquet.html'" class="btn-custom-bouquet">
+      Créer mon Bouquet Personnalisé
+    </button>
+    <button onclick="location.href='/bouquet.html'" class="btn-custom-bouquet">
+      Voir les Bouquets disponibles
+    </button>
+  </div>
+
+  <!-- Alert -->
+  <div id="alert" class="alert"></div>
+
+  <script>
+    // Exemple simple pour afficher la navbar user si connecté
+    let token = localStorage.getItem('token');
+    let client = JSON.parse(localStorage.getItem('client') || '{}');
+    const navUser = document.getElementById('nav-user');
+
+    if (token && client.prenom) {
+      const initials = `${client.prenom?.[0] || ''}${client.nom?.[0] || ''}`.toUpperCase();
+      navUser.innerHTML = `
+  <div class="user-info" onclick="location.href='/profile.html'" title="Voir mon profil">
+    <div class="user-avatar">${initials}</div>
+    <span>${client.prenom}</span>
+  </div>
+  <button class="cart-btn" onclick="location.href='/orders.html'" title="Mes commandes">
+    Mes Commandes
+  </button>
+   <button class="cart-btn" onclick="location.href='/profile.html'" title="Mes commandes">
+    Mon Profil
+  </button>
+  <button class="cart-btn" onclick="location.href='/bouquet.html'" title="Voir les bouquets">
+    Mon Panier
+  </button>
+  <button class="btn-logout" onclick="logout()">Déconnexion</button>
+`;
+    } else {
+      navUser.innerHTML = `<button class="btn-logout" onclick="location.href='/auth.html'">🔐 Connexion / Inscription</button>`;
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('client');
+      window.location.href = '/dashboard.html';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer mon Bouquet Personnalisé</title>
+   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fce9f4; min-height: 100vh; }
+    
+    .navbar {
+      background: rgba(0,0,0,0.2);
+      box-shadow: none;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 20px 30px;
+    }
+
+    .nav-content {
+      max-width: 1400px; 
+      margin: 0 auto; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+
+    .nav-brand { font-size: 1.5em; font-weight: bold; display: flex; align-items: center; gap: 10px; color:white; }
+    .nav-user { display: flex; align-items: center; gap: 20px; }
+    .btn-back { padding: 8px 20px; background: rgba(255, 255, 255, 0.2); border: 2px solid white; color: white; border-radius: 8px; cursor: pointer; font-weight: 600; text-decoration: none; transition: all 0.3s; }
+    .btn-back:hover { background: white; color: #ff6b9d; }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+   
+
+    .layout { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+    
+    .section { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); }
+    .section-title { font-size: 1.8em; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    
+    .flowers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .flower-card { background: #f9f9f9; border-radius: 12px; padding: 15px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; border: 3px solid transparent; }
+    .flower-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+    .flower-card.selected { border-color: #ff6b9d; background: #fff5f8; }
+    .flower-image { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); display: flex; align-items: center; justify-content: center; font-size: 3em; }
+    .flower-image img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+    .flower-name { font-weight: bold; color: #333; margin-bottom: 5px; }
+    .flower-price { color: #ff6b9d; font-weight: bold; font-size: 1.1em; margin-bottom: 10px; }
+    .flower-qty { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; }
+    .qty-btn { width: 30px; height: 30px; border: 2px solid #ff6b9d; background: white; color: #ff6b9d; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .qty-btn:hover:not(:disabled) { background: #ff6b9d; color: white; }
+    .qty-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .qty-display { font-weight: bold; min-width: 30px; }
+
+    .preview-canvas { background: linear-gradient(135deg, #fff5f8 0%, #ffe8f0 100%); border-radius: 12px; padding: 30px; text-align: center; margin-bottom: 20px; min-height: 150px; display: flex; align-items: center; justify-content: center; }
+    .preview-flowers { font-size: 2em; line-height: 1.5; }
+
+    .bouquet-name { margin-bottom: 15px; }
+    .bouquet-name input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em; }
+    
+    .bouquet-items { max-height: 200px; overflow-y: auto; margin-bottom: 15px; }
+    .bouquet-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px; }
+    .item-name { font-weight: 600; color: #333; }
+    .item-details { color: #666; font-size: 0.9em; }
+    .btn-remove { background: #ff4757; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.85em; }
+
+    .bouquet-total { background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+    .total-line { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .total-label { font-weight: 600; color: #666; }
+    .total-value { font-weight: bold; color: #333; }
+    .total-final { font-size: 1.5em; color: #ff6b9d; padding-top: 10px; border-top: 2px solid #e0e0e0; margin-top: 10px; }
+
+    .btn-order { width: 100%; padding: 15px; background: linear-gradient(135deg, #ff6b9d 0%, #c239b3 100%); color: white; border: none; border-radius: 10px; font-size: 1.2em; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
+    .btn-order:hover:not(:disabled) { transform: scale(1.02); }
+    .btn-order:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; }
+    .alert.show { display: block; }
+    .alert-success { background: #d4edda; color: #155724; }
+    .alert-error { background: #f8d7da; color: #721c24; }
+    .alert-info { background: #d1ecf1; color: #0c5460; }
+
+    .empty-bouquet { text-align: center; padding: 40px; color: #999; }
+    .loading { text-align: center; padding: 40px; color: #666; }
+
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+    .form-group input { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; }
+
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-content">
+      <div class="nav-brand">💐 Créer mon Bouquet</div>
+      <a href="/dashboard.html" class="btn-back">← Retour</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    
+
+    <div id="alert" class="alert"></div>
+
+    <div class="layout">
+      <div class="section">
+        <br>
+        <br>
+        <h2 class="section-title">🌸 Choisissez vos Fleurs</h2>
+        <div id="flowers-container" class="loading">Chargement des fleurs...</div>
+      </div>
+
+      <div class="section bouquet-preview">
+        <br>
+        <br>
+        <h2 class="section-title">💐 Votre Bouquet</h2>
+        
+        <div class="preview-canvas">
+          <div class="preview-flowers" id="preview-flowers">💐</div>
+        </div>
+
+        <div class="bouquet-name">
+          <input type="text" id="bouquet-name" placeholder="Nom de votre bouquet..." value="Mon Bouquet Personnalisé">
+        </div>
+
+        <div class="bouquet-items" id="bouquet-items">
+          <div class="empty-bouquet">Aucune fleur sélectionnée</div>
+        </div>
+
+        <div class="bouquet-total">
+          <div class="total-line">
+            <span class="total-label">Nombre de fleurs:</span>
+            <span class="total-value" id="total-quantity">0</span>
+          </div>
+          <div class="total-line total-final">
+            <span class="total-label">Total:</span>
+            <span class="total-value" id="total-price">0 DH</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Adresse de livraison *</label>
+          <input type="text" id="adresse" placeholder="Votre adresse complète">
+        </div>
+
+        <div class="form-group">
+          <label>Téléphone *</label>
+          <input type="tel" id="telephone" placeholder="+212 6 XX XX XX XX">
+        </div>
+
+        <button class="btn-order" id="btn-order" onclick="orderBouquet()" disabled>
+          Commander mon Bouquet
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    console.log('Custom Bouquet - Token:', token ? 'présent' : 'absent');
+    console.log('Custom Bouquet - User:', user);
+
+    // ❌ On ne bloque plus l’affichage
+    // ❌ On NE redirige plus au chargement de la page
+    // ✔️ On redirige SEULEMENT quand l’utilisateur essaie d’ajouter une fleur
+
+    let flowers = [];
+    let bouquet = {};
+
+    async function loadFlowers() {
+      try {
+        const response = await fetch('/api/products/public');
+
+        if (!response.ok) {
+          throw new Error('Erreur chargement');
+        }
+
+        const allProducts = await response.json();
+        console.log('Tous les produits:', allProducts);
+        
+        flowers = allProducts.filter(p => p.type === 'fleur');
+        console.log('Fleurs filtrées:', flowers);
+        
+        displayFlowers();
+      } catch (error) {
+        console.error('Erreur loadFlowers:', error);
+        document.getElementById('flowers-container').innerHTML = 
+          '<div class="alert alert-error show">Erreur lors du chargement des fleurs</div>';
+      }
+    }
+
+    function requireLogin() {
+      if (!token || user.role !== "client") {
+        localStorage.setItem("redirectAfterLogin", "/custom-bouquet.html");
+        
+        window.location.href = "/auth.html";
+        return false;
+      }
+      return true;
+    }
+   
+
+    function displayFlowers() {
+      const container = document.getElementById('flowers-container');
+      
+      if (flowers.length === 0) {
+        container.innerHTML = '<div class="alert alert-info show">Aucune fleur disponible.</div>';
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="flowers-grid">
+          ${flowers.map(f => {
+            const isInBouquet = bouquet[f.id];
+            const currentQty = isInBouquet ? bouquet[f.id].quantite : 0;
+            
+            return `
+              <div class="flower-card ${isInBouquet ? 'selected' : ''}" id="card-${f.id}">
+                <div class="flower-image">
+                  ${f.imageUrl ? `<img src="${f.imageUrl}" alt="${f.name}">` : '🌸'}
+                </div>
+                <div class="flower-name">${f.name}</div>
+                <div class="flower-price">${f.prix} DH</div>
+
+                <div class="flower-qty">
+                  <button class="qty-btn" onclick="updateFlowerQty('${f.id}', -1)">-</button>
+                  <span class="qty-display" id="qty-${f.id}">${currentQty}</span>
+                  <button class="qty-btn" onclick="updateFlowerQty('${f.id}', 1)">+</button>
+                </div>
+
+                <small style="color: #666;">${f.stock > 0 ? `Stock: ${f.stock}` : 'Rupture'}</small>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function updateFlowerQty(flowerId, change) {
+      // 🔒 Vérification login
+      if (!requireLogin()) return;
+
+      console.log('updateFlowerQty:', flowerId, change);
+      
+      const flower = flowers.find(f => f.id === flowerId);
+      if (!flower) return;
+
+      const currentQty = bouquet[flowerId]?.quantite || 0;
+      const newQty = Math.max(0, Math.min(flower.stock, currentQty + change));
+
+      if (newQty === 0) {
+        delete bouquet[flowerId];
+      } else {
+        bouquet[flowerId] = {
+          id: flowerId,
+          name: flower.name,
+          prix: flower.prix,
+          quantite: newQty,
+          imageUrl: flower.imageUrl
+        };
+      }
+
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      displayFlowers();
+
+      const itemsContainer = document.getElementById('bouquet-items');
+      const items = Object.values(bouquet);
+
+      if (items.length === 0) {
+        itemsContainer.innerHTML = '<div class="empty-bouquet">Aucune fleur sélectionnée</div>';
+      } else {
+        itemsContainer.innerHTML = items.map(item => `
+          <div class="bouquet-item">
+            <div>
+              <div class="item-name">${item.name}</div>
+              <div class="item-details">${item.quantite} × ${item.prix} DH = ${(item.quantite * item.prix).toFixed(2)} DH</div>
+            </div>
+            <button class="btn-remove" onclick="removeFlower('${item.id}')">✕</button>
+          </div>
+        `).join('');
+      }
+
+      const previewContainer = document.getElementById('preview-flowers');
+      if (items.length === 0) {
+        previewContainer.innerHTML = '💐';
+      } else {
+        previewContainer.innerHTML = items.map(item => 
+          Array(Math.min(item.quantite, 5)).fill('🌸').join(' ')
+        ).join(' ');
+      }
+
+      const totalQty = items.reduce((sum, item) => sum + item.quantite, 0);
+      const totalPrice = items.reduce((sum, item) => sum + (item.quantite * item.prix), 0);
+
+      document.getElementById('total-quantity').textContent = totalQty;
+      document.getElementById('total-price').textContent = totalPrice.toFixed(2) + ' DH';
+
+      document.getElementById('btn-order').disabled = items.length === 0;
+    }
+
+    function removeFlower(flowerId) {
+      delete bouquet[flowerId];
+      updateDisplay();
+    }
+
+    async function orderBouquet() {
+      // 🔒 Vérification login AVANT commande
+      if (!requireLogin()) return;
+
+      const adresse = document.getElementById('adresse').value.trim();
+      const telephone = document.getElementById('telephone').value.trim();
+      const nomBouquet = document.getElementById('bouquet-name').value.trim();
+
+      if (!adresse || !telephone) {
+        showAlert('Veuillez remplir l\'adresse et le téléphone', 'error');
+        return;
+      }
+
+      const items = Object.values(bouquet);
+      if (items.length === 0) {
+        showAlert('Veuillez sélectionner au moins une fleur', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btn-order');
+      btn.disabled = true;
+      btn.textContent = 'Commande en cours...';
+
+      try {
+        const payload = {
+          adresseLivraison: adresse,
+          telephone,
+          bouquetPersonnalise: {
+            nomBouquet,
+            fleurs: items
+          }
+        };
+
+        const response = await fetch('/api/panier/checkout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showAlert(`✓ Bouquet commandé avec succès ! Total: ${data.totalMontant.toFixed(2)} DH`, 'success');
+          
+          setTimeout(() => {
+            window.location.href = '/dashboard.html';
+          }, 1500);
+        } else {
+          showAlert(data.error || 'Erreur lors de la commande', 'error');
+        }
+      } catch (error) {
+        showAlert('Erreur serveur', 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Commander mon Bouquet';
+    }
+
+    function showAlert(message, type) {
+      const alert = document.getElementById('alert');
+      alert.textContent = message;
+      alert.className = `alert alert-${type} show`;
+      setTimeout(() => alert.classList.remove('show'), 5000);
+    }
+
+    console.log('Chargement des fleurs...');
+    loadFlowers();
+</script>
+
+</body>
+</html>
